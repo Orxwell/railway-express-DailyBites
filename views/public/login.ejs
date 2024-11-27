@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta
+      charset="UTF-8"
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="/static/icon/favicon.ico"
+    />
+
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/static/css/login.css"
+    />
+
+    <title><%= title %></title>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>DailyBites</h1>
+        <p>LogIn</p>
+      </header>
+
+      <main>
+        <section class="container">
+          <h2>Iniciar Sesión</h2>
+          <form
+            action="/login"
+            method="POST"
+          >
+            <% if (data.errorFlag && data.tokenExpired) { %>
+              <p style="color: orangered;"><%= data.errorMessage %></p>
+            <% } else if (data.errorFlag) { %>
+              <p style="color: red;"><%= data.errorMessage %></p>
+            <% } %>
+
+            <select
+              id="shopname"
+              class="entries"
+              name="shopname"
+              required
+            >
+              <option
+                value=""
+                disabled
+                selected
+              >Establecimiento</option>
+
+              <% data.establishments.forEach((item) => { %>
+                  <option value="<%= item.shopname %>">
+                    <%= item.shopname %>
+                  </option>
+              <% }); %>
+            </select>
+
+            <input
+              id="password"
+              class="entries"
+              type="password"
+              name="password"
+              placeholder="contraseña"
+              required
+            />
+            <% if (data.invalidPasswordFlag) { %>
+              <style> #password { border-color: red; } </style>
+            <% } %>
+
+            <div>
+              <label for="checkbox">Mostrar</label>
+              <input
+                id="checkbox"
+                type="checkbox"
+              />
+
+              <script src="/static/js/checkbox.js"></script>
+            </div>
+
+            <button type="submit">Acceder</button>
+          </form>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

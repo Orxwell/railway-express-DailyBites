@@ -1,0 +1,19 @@
+{
+  "name": "railway-dailybites-express",
+  "version": "1.0.0",
+  "main": "server.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start-pro": "node ./src/server.mjs",
+    "start-dev": "node --env-file .env ./src/server.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@supabase/supabase-js": "2.46.1",
+    "ejs": "3.1.10",
+    "express": "4.21.1"
+  }
+}
