@@ -3,10 +3,11 @@ import express from 'express';
 import ejs     from 'ejs'    ;
 
 // Librerías internas, o "propias"
-import uploadPNG from './handlers/pngHandler.mjs'    ;
-import filesEJS  from './paths/pathsEJS.mjs'         ;
-import utils     from './paths/utils.mjs'            ;
-import db        from './controlers/controler_db.mjs';
+import transporter from './handlers/gmailHandler.mjs'  ;
+import uploadPNG   from './handlers/pngHandler.mjs'    ;
+import filesEJS    from './paths/pathsEJS.mjs'         ;
+import utils       from './paths/utils.mjs'            ;
+import db          from './controlers/controler_db.mjs';
 
 import {
   generateSpecsToken,
@@ -16,7 +17,7 @@ import {
 const app  = express();
 const PORT = process.env.PORT || 5050;
 
-const FOOTER = 'DailyBites es un...';
+const gmail_user = process.env.GMAIL_USER;
 
 app.set('view engine', ejs);
 
@@ -44,8 +45,6 @@ async function generateToken() {
       try {
         res.render(filesEJS.landingEJS, {
           title: 'DailyBites',
-
-          footer: FOOTER,
         });
       }
       catch (_) { res.sendStatus(503); }
@@ -122,7 +121,9 @@ async function generateToken() {
     });
 
     app.get('/check', async (req, res) => {
-      const { dishid, clientname, deliverytime, paymethod } = req.query;
+      const {
+        dishid, clientname, deliverytime, paymethod, clientgmail
+      } = req.query;
 
       let records = await db.readRecords('dishes', { id: dishid }, 'name, price, location, img_uri');
 
@@ -132,6 +133,7 @@ async function generateToken() {
         clientname  : clientname   ?? 'N/A',
         deliverytime: deliverytime ?? 'N/A',
         paymethod   : paymethod    ?? 'N/A',
+        clientgmail : clientgmail  ?? 'N/A',
       };
 
       try {
@@ -220,13 +222,16 @@ async function generateToken() {
     });
 
     app.post('/order', async (req, res) => {
-      const { dishid, clientname, deliverytime, paymethod } = req.body;
+      const {
+        dishid, clientname, deliverytime, paymethod, clientgmail
+      } = req.body;
 
       try {
         res.redirect(`/check?dishid=${dishid}&` +
           `clientname=${clientname}&` +
           `deliverytime=${deliverytime}&` +
-          `paymethod=${paymethod}`
+          `paymethod=${paymethod}&` +
+          `clientgmail=${clientgmail}`
         );
       }
       catch (_) { res.sendStatus(503); }
@@ -234,8 +239,8 @@ async function generateToken() {
 
     app.post('/check', async (req, res) => {
       const {
-        clientname, deliverytime, paymethod, location, productname,
-        totalprice
+        clientname, clientgmail, deliverytime, paymethod, location,
+        productname, totalprice
       } = req.body;
 
       await db.createRecord('notifications',
@@ -253,8 +258,32 @@ async function generateToken() {
       // Aquí es donde se hará la conexión con el Arduino.
       //TODO - ABOVE
 
+      const mailOptions = {
+        from: gmail_user,
+        to: clientgmail,
+        subject: 'Factura de compra - DailyBites',
+        text: `
+          Estimado ${clientname}.
+          Su pedido estará disponible a partir de las ${deliverytime} y
+          se le cobrará mediante el método espeficidado por usted como
+          ${paymethod}, podrá retirar el producto enla tienda ${location}
+          y el costo total a pagar son unos ${totalprice}.
+
+          ¡Muchas gracias por su reserva!
+        `
+      }
+
       try {
-        res.redirect(`/shop`);
+        transporter.sendMail(mailOptions,
+          (error, _) => {
+            if (error) {
+              console.log(error);
+              return res.sendStatus(503);
+            }
+
+            res.redirect(`/shop`);
+          }
+        );
       }
       catch (_) { res.sendStatus(503); }
     });

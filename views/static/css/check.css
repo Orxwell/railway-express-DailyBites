@@ -49,6 +49,7 @@ main {
   
 
   padding-top: 70px;
+  padding-bottom: 20px;
 }
 
 section {
@@ -74,16 +75,8 @@ section {
 form {
   user-select: none;
   
-  display: grid;
-  grid-template-areas:
-    "a a"
-    "b c"
-    "d e"
-    "f g"
-    "h i"
-    "j k"
-    "l m"
-    "n n";
+  display: flex;
+  flex-direction: column;
 
   gap: 14px;
 
@@ -169,6 +162,8 @@ p {
 
 span {
   user-select: none;
+
+  max-width: 400px;
 
   text-align: left;
 
