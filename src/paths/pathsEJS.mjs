@@ -26,9 +26,9 @@ const notFoundEJS = join(publicViewsPath, '/not_found.ejs');
 const filesEJS = {
   landingEJS,      //*
   loginEJS,        //*
-  shopEJS,         //!
-  orderEJS,        //!
-  checkEJS,        //!
+  shopEJS,         //*
+  orderEJS,        //*
+  checkEJS,        //TODO
   productFormEJS,  //!
   notificationEJS, //!
   notFoundEJS      //*

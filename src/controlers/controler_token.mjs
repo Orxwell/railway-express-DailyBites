@@ -18,14 +18,14 @@ export function scheduleTokenExpiration(specs_token) {
   if (expireInMs > 0) {
     setTimeout(async () => {
       try {
-        const foundToken = await db.readRecords('tokens', filter={
-          token: specs_token.token
-        });
+        const foundToken = await db.readRecords('tokens',
+          { token: specs_token.token }
+        );
 
         if (foundToken && foundToken.length > 0) {
-          await db.deleteRecord('tokens', filter={
-            token: specs_token.token
-          });
+          await db.deleteRecord('tokens',
+            { token: specs_token.token }
+          );
         }
       } catch (err) {
         console.error(

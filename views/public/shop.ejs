@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta
+      charset="UTF-8"
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="/static/icon/favicon.ico"
+    />
+
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/static/css/shop.css"
+    />
+
+    <title><%= title %></title>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>DailyBites</h1>
+        <p>Platos</p>
+      </header>
+
+      <main>
+        <% if (data.token) { %>
+          <a class="ref" href='/product_form?token=<%= data.token %>'">Subir almuerzo</a>
+        <% } %>
+
+        <% data.dishes.forEach((item) => { %>
+          <section class="container">
+            <% if (data.token) { %>
+              <a href="/product_form?token=<%= data.token %>&dishid=<%= item.id %>">
+                <img src="<%= item.img_uri %>"/>
+              </a>
+            <% } else { %>
+              <a href="/order?dishid=<%= item.id %>">
+                <img src="<%= item.img_uri %>"/>
+              </a>
+            <% } %>
+            
+            <h2><%= item.name %></h2>
+            <p>Precio: $ <%= item.price %></p>
+            <p>Tienda: <%= item.location %></p>
+          </section>
+        <% }); %>
+      </main>
+    </div>
+  </body>
+</html>

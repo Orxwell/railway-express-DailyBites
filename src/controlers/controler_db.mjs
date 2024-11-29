@@ -29,7 +29,7 @@ async function readRecords(table, filter={}, columns='*') {
 }
 
 // Actualizar registros en la tabla con un filtro dinámico
-async function updateRecord(table, filter, new_data) {
+async function updateRecord(table, filter={}, new_data) {
   const { error } = await dbClient
     .from(table)
     .update(new_data) // Actualizar los datos
@@ -50,6 +50,16 @@ async function deleteRecord(table, filter) {
 
   if (error) {
     console.error(`\n  ~Error al eliminar registros de la tabla ${table}:`, error.message);
+    throw new Error(error.message);
+  }
+}
+
+// Eliminar todos los registros en la tabla
+async function truncateTable(table) {
+  const { error } = await dbClient.rpc('truncate_table', { table_name: table });
+
+  if (error) {
+    console.error(`\n  ~Error truncando la tabla ${table}:`, error.message);
     throw new Error(error.message);
   }
 }
@@ -89,6 +99,7 @@ const db = {
   updateRecord,
 
   createTable,
-  deleteTable
+  deleteTable,
+  truncateTable
 };
 export default db;
